@@ -115,5 +115,18 @@
     ],
     "alasan": "Suhu permukaan mencapai 43.8C dengan tren kenaikan yang sangat cepat, yang berisiko merusak jaringan akar dan menghentikan aktivitas mikroba tanah.",
     "sumber": "ai"
+  },
+  {
+    "waktu": "2026-07-29T07:40:52.540Z",
+    "suhuRuang": 28.5,
+    "suhuPermukaan": 35,
+    "status": "PERHATIAN - FLUKTUATIF",
+    "rekomendasi": [
+      "Pasang mulsa organik untuk meredam fluktuasi suhu permukaan yang ekstrem",
+      "Lakukan penyiraman secara teratur pada pagi hari untuk mendinginkan tanah",
+      "Periksa kalibrasi sensor inframerah karena pembacaan suhu sangat fluktuatif dalam waktu singkat"
+    ],
+    "alasan": "Suhu permukaan tanah menunjukkan fluktuasi yang sangat tajam dan cepat (dari 32.5C naik hingga 43.8C dalam hitungan menit), menunjukkan potensi stres termal pada tanaman dan inkonsistensi pembacaan sensor.",
+    "sumber": "ai"
   }
 ]
