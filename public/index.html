@@ -269,6 +269,7 @@
 
 <script>
 const REFRESH_MS = 5000;
+const ANGGAP_OFFLINE_SETELAH_MS = 5 * 60 * 1000; // kalau data terakhir lebih tua dari 5 menit, anggap sensor offline
 let sudahAdaData = false;
 
 function warnaStatus(suhu) {
@@ -435,12 +436,21 @@ async function ambilData() {
     const history = await historyRes.json();
     render(latest, history);
 
-    dot.className = 'dot ok';
-    statusText.textContent = 'Terhubung';
-    warnBox.classList.remove('show');
+    const umurData = Date.now() - new Date(latest.waktu).getTime();
+    if (umurData > ANGGAP_OFFLINE_SETELAH_MS) {
+      dot.className = 'dot';
+      statusText.textContent = 'Sensor offline';
+      warnBox.textContent = '⚠ Data terakhir sudah lebih dari 5 menit lalu. Server aktif, tapi sensor ESP32 kemungkinan mati/terputus.';
+      warnBox.classList.add('show');
+    } else {
+      dot.className = 'dot ok';
+      statusText.textContent = 'Terhubung';
+      warnBox.classList.remove('show');
+    }
   } catch (err) {
     dot.className = 'dot';
     statusText.textContent = 'Terputus';
+    warnBox.textContent = '⚠️ Gagal mengambil data dari server. Pastikan server berjalan dan URL benar.';
     warnBox.classList.add('show');
     console.error(err);
   }
