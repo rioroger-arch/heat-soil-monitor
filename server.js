@@ -13,7 +13,7 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const AI_MODEL = process.env.AI_MODEL || 'gemini-2.5-flash';
+const AI_MODEL = process.env.AI_MODEL || 'gemini-3.5-flash-lite';
 
 const DATA_FILE = path.join(__dirname, 'data.json');
 const MAX_HISTORY = 200;
@@ -102,16 +102,16 @@ async function mintaRekomendasiAI(suhuRuang, suhuPermukaan, historiSingkat) {
         .join('\n')
     : '(belum ada data sebelumnya)';
 
-  const systemPrompt = `Kamu adalah asisten agronomi yang menganalisis data suhu tanah dari sensor inframerah (MLX90614) pada sebuah lahan pertanian/perkebunan kecil. Tugasmu memberi rekomendasi treatment tanah yang singkat, praktis, dan bisa langsung dikerjakan petani.
+  const systemPrompt = `Kamu adalah asisten agronomi berpengalaman yang menganalisis data suhu tanah dari sensor inframerah (MLX90614) pada sebuah lahan pertanian/perkebunan kecil. Tugasmu memberi analisis dan rekomendasi treatment tanah yang mendalam, informatif, dan bisa langsung dikerjakan petani.
 
 Balas HANYA dengan JSON valid, tanpa markdown, tanpa teks lain, dengan format persis:
 {
   "status": "satu frasa singkat status kondisi tanah (contoh: OPTIMAL, PERHATIAN - PANAS, KRITIS - TERLALU PANAS)",
-  "rekomendasi": ["langkah 1", "langkah 2", "langkah 3"],
-  "alasan": "1-2 kalimat penjelasan kenapa rekomendasi ini diberikan, berdasarkan data suhu dan trennya"
+  "rekomendasi": ["langkah 1 dengan penjelasan singkat kenapa langkah ini perlu", "langkah 2 dengan penjelasan singkat", "langkah 3 dengan penjelasan singkat", "langkah 4 dengan penjelasan singkat"],
+  "alasan": "analisis mendalam 4-6 kalimat yang menjelaskan: kondisi suhu saat ini dan artinya secara agronomis, bagaimana tren dari data historis (naik/turun/stabil dan seberapa cepat), dampak potensial terhadap tanaman/mikroba tanah/kelembapan jika kondisi ini berlanjut, dan konteks tambahan yang relevan (misal waktu hari, musim, atau karakteristik tanah yang perlu diperhatikan)"
 }
 
-Pertimbangkan suhu permukaan sebagai faktor utama, suhu ruang sebagai konteks pendukung, dan tren dari data historis jika ada (misalnya suhu naik cepat vs stabil).`;
+Berikan MINIMAL 4 langkah rekomendasi (boleh lebih kalau relevan), masing-masing dengan penjelasan singkat kenapa langkah itu penting, bukan cuma instruksi satu baris. Bagian "alasan" harus berupa analisis yang benar-benar mendalam, bukan ringkasan satu-dua kalimat saja. Pertimbangkan suhu permukaan sebagai faktor utama, suhu ruang sebagai konteks pendukung, dan tren dari data historis jika ada (misalnya suhu naik cepat vs stabil, atau pola berulang).`;
 
   const userPrompt = `Data sensor saat ini:
 - Suhu permukaan tanah: ${suhuPermukaan}C
@@ -135,8 +135,8 @@ Berikan rekomendasi treatment tanah untuk kondisi ini.`;
       contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
       generationConfig: {
         responseMimeType: 'application/json',
-        maxOutputTokens: 1024,
-        thinkingConfig: { thinkingLevel: 'low' }
+        maxOutputTokens: 2048,
+        thinkingConfig: { thinkingLevel: 'medium' }
       }
     })
   });
@@ -161,7 +161,7 @@ app.post('/api/data', async (req, res) => {
   }
 
   const histori = bacaHistori();
-  const historiSingkat = histori.slice(-5).map(h => ({
+  const historiSingkat = histori.slice(-8).map(h => ({
     waktu: h.waktu,
     suhuRuang: h.suhuRuang,
     suhuPermukaan: h.suhuPermukaan

@@ -128,5 +128,19 @@
     ],
     "alasan": "Suhu permukaan tanah menunjukkan fluktuasi yang sangat tajam dan cepat (dari 32.5C naik hingga 43.8C dalam hitungan menit), menunjukkan potensi stres termal pada tanaman dan inkonsistensi pembacaan sensor.",
     "sumber": "ai"
+  },
+  {
+    "waktu": "2026-07-29T08:04:09.177Z",
+    "suhuRuang": 28.5,
+    "suhuPermukaan": 35,
+    "status": "PERHATIAN - FLUKTUASI EKSTRIM",
+    "rekomendasi": [
+      "Aplikasikan mulsa organik setebal 5-7 cm untuk meredam fluktuasi suhu permukaan yang ekstrem dan menjaga kelembapan tanah agar akar tidak mengalami cekaman termal.",
+      "Lakukan penyiraman secara teratur pada pagi hari sebelum pukul 08.00 untuk menurunkan panas laten permukaan dan mencadangkan air tanah menghadapi evaporasi tinggi di siang hari.",
+      "Tanam tanaman penutup tanah (cover crops) atau sediakan naungan parsial guna memotong radiasi matahari langsung yang terbukti memicu lonjakan suhu permukaan hingga di atas 50°C.",
+      "Lakukan pemantauan kelembapan tanah secara berkala untuk memastikan ketidakstabilan suhu tidak merusak aktivitas mikroorganisme tanah yang esensial bagi penyerapan hara."
+    ],
+    "alasan": "Suhu permukaan tanah saat ini tercatat 35°C dengan suhu udara 28.5°C, yang tampak moderat namun data historis menunjukkan adanya fluktuasi ekstrem dengan lonjakan suhu permukaan mencapai 51.2°C dalam waktu singkat. Tren historis ini mencerminkan ketidakstabilan termal yang parah, mengindikasikan bahwa permukaan tanah sangat rentan terhadap radiasi matahari langsung akibat minimnya lapisan pelindung atau mulsa. Perubahan suhu yang drastis dan mendadak ini sangat berbahaya bagi kelangsungan hidup mikroba tanah, merusak rambut akar tanaman yang dangkal, serta memicu stres fisiologis pada tanaman. Tanpa intervensi pengelolaan suhu seperti penambahan mulsa dan pengaturan irigasi, fluktuasi ini akan terus menguras cadangan air tanah dan menurunkan kesuburan biologis lahan secara signifikan.",
+    "sumber": "ai"
   }
 ]
