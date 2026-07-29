@@ -1,0 +1,119 @@
+[
+  {
+    "waktu": "2026-07-29T02:16:14.200Z",
+    "suhuRuang": 28.5,
+    "suhuPermukaan": 41.2,
+    "status": "PERINGATAN - PANAS",
+    "rekomendasi": [
+      "Tingkatkan frekuensi penyiraman pada pagi atau sore hari",
+      "Tambahkan mulsa organik untuk menjaga kelembapan tanah",
+      "Kurangi paparan panas berlebih jika memungkinkan"
+    ],
+    "alasan": "Suhu permukaan tanah di atas rentang optimal, dihasilkan dari aturan cadangan karena AI tidak tersedia.",
+    "sumber": "fallback"
+  },
+  {
+    "waktu": "2026-07-29T02:32:19.830Z",
+    "suhuRuang": 28.5,
+    "suhuPermukaan": 41.2,
+    "status": "PERINGATAN - PANAS",
+    "rekomendasi": [
+      "Tingkatkan frekuensi penyiraman pada pagi atau sore hari",
+      "Tambahkan mulsa organik untuk menjaga kelembapan tanah",
+      "Kurangi paparan panas berlebih jika memungkinkan"
+    ],
+    "alasan": "Suhu permukaan tanah di atas rentang optimal, dihasilkan dari aturan cadangan karena AI tidak tersedia.",
+    "sumber": "fallback"
+  },
+  {
+    "waktu": "2026-07-29T02:32:53.398Z",
+    "suhuRuang": 28.5,
+    "suhuPermukaan": 51.2,
+    "status": "KRITIS - TERLALU PANAS",
+    "rekomendasi": [
+      "Lakukan penyiraman segera untuk menurunkan suhu tanah",
+      "Gunakan mulsa atau penutup tanah untuk mengurangi evaporasi",
+      "Tunda pemupukan hingga suhu kembali normal"
+    ],
+    "alasan": "Suhu permukaan tanah melebihi batas aman (>45C), dihasilkan dari aturan cadangan karena AI tidak tersedia.",
+    "sumber": "fallback"
+  },
+  {
+    "waktu": "2026-07-29T02:33:37.844Z",
+    "suhuRuang": 28.5,
+    "suhuPermukaan": 41.2,
+    "status": "PERINGATAN - PANAS",
+    "rekomendasi": [
+      "Tingkatkan frekuensi penyiraman pada pagi atau sore hari",
+      "Tambahkan mulsa organik untuk menjaga kelembapan tanah",
+      "Kurangi paparan panas berlebih jika memungkinkan"
+    ],
+    "alasan": "Suhu permukaan tanah di atas rentang optimal, dihasilkan dari aturan cadangan karena AI tidak tersedia.",
+    "sumber": "fallback"
+  },
+  {
+    "waktu": "2026-07-29T02:37:10.344Z",
+    "suhuRuang": 28.5,
+    "suhuPermukaan": 41.2,
+    "status": "PERINGATAN - PANAS",
+    "rekomendasi": [
+      "Tingkatkan frekuensi penyiraman pada pagi atau sore hari",
+      "Tambahkan mulsa organik untuk menjaga kelembapan tanah",
+      "Kurangi paparan panas berlebih jika memungkinkan"
+    ],
+    "alasan": "Suhu permukaan tanah di atas rentang optimal, dihasilkan dari aturan cadangan karena AI tidak tersedia.",
+    "sumber": "fallback"
+  },
+  {
+    "waktu": "2026-07-29T02:40:56.245Z",
+    "suhuRuang": 28.5,
+    "suhuPermukaan": 41.2,
+    "status": "PERHATIAN - PANAS",
+    "rekomendasi": [
+      "Lakukan penyiraman sistem kabut (mist irrigation) untuk mendinginkan permukaan tanah segera",
+      "Tambahkan lapisan mulsa organik seperti jerami atau dedaunan untuk menahan penguapan",
+      "Pasang jaring peneduh atau paranet sementara untuk mengurangi radiasi matahari langsung"
+    ],
+    "alasan": "Suhu permukaan tanah mencapai 41.2°C, jauh melebihi suhu udara 28.5°C, yang berisiko merusak sistem perakaran dan mempercepat dehidrasi tanaman.",
+    "sumber": "ai"
+  },
+  {
+    "waktu": "2026-07-29T02:45:34.537Z",
+    "suhuRuang": 27,
+    "suhuPermukaan": 32.5,
+    "status": "PERHATIAN - PASCA PANAS EKSTREM",
+    "rekomendasi": [
+      "Tambahkan mulsa organik seperti jerami atau sekam untuk menjaga stabilitas suhu",
+      "Lakukan penyiraman secara mendalam (deep watering) pada sore hari",
+      "Pasang peneduh sementara jika tanah terpapar matahari langsung secara terus-menerus"
+    ],
+    "alasan": "Suhu saat ini sudah menurun ke 32.5C, namun riwayat menunjukkan lonjakan panas ekstrem hingga 51.2C yang berisiko merusak struktur tanah dan mikroorganisme.",
+    "sumber": "ai"
+  },
+  {
+    "waktu": "2026-07-29T02:45:43.039Z",
+    "suhuRuang": 29,
+    "suhuPermukaan": 36,
+    "status": "PERHATIAN - CUKUP PANAS",
+    "rekomendasi": [
+      "Lakukan penyiraman ringan (mist irrigation) untuk mendinginkan permukaan tanah",
+      "Tambahkan lapisan mulsa organik seperti jerami atau sekam untuk meredam panas",
+      "Pantau kelembapan tanah secara berkala untuk mencegah penguapan berlebih"
+    ],
+    "alasan": "Suhu permukaan 36C menunjukkan kondisi yang cukup panas meskipun ada tren penurunan dari suhu ekstrem 51.2C sebelumnya. Tanah membutuhkan perlindungan tambahan agar suhu stabil mendekati suhu ruang dan mencegah stres pada akar tanaman.",
+    "sumber": "ai"
+  },
+  {
+    "waktu": "2026-07-29T02:45:51.837Z",
+    "suhuRuang": 30,
+    "suhuPermukaan": 43.8,
+    "status": "KRITIS - TERLALU PANAS",
+    "rekomendasi": [
+      "Lakukan penyiraman air segera untuk menurunkan suhu permukaan tanah secara drastis",
+      "Pasang mulsa organik (jerami atau sekam) untuk melindungi tanah dari radiasi matahari langsung",
+      "Gunakan jaring peneduh atau paranet untuk mengurangi intensitas panas di area lahan"
+    ],
+    "alasan": "Suhu permukaan mencapai 43.8C dengan tren kenaikan yang sangat cepat, yang berisiko merusak jaringan akar dan menghentikan aktivitas mikroba tanah.",
+    "sumber": "ai"
+  }
+]
