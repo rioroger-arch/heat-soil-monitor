@@ -42,9 +42,10 @@ function rekomendasiFallback(suhuPermukaan) {
     return {
       status: 'KRITIS - TERLALU PANAS',
       rekomendasi: [
-        'Lakukan penyiraman segera untuk menurunkan suhu tanah',
-        'Gunakan mulsa atau penutup tanah untuk mengurangi evaporasi',
-        'Tunda pemupukan hingga suhu kembali normal'
+        { langkah: 'Lakukan penyiraman segera untuk menurunkan suhu tanah', kategori: 'penyiraman' },
+        { langkah: 'Gunakan mulsa atau penutup tanah untuk mengurangi evaporasi', kategori: 'mulsa' },
+        { langkah: 'Pasang naungan sementara untuk mengurangi paparan matahari langsung', kategori: 'naungan' },
+        { langkah: 'Tunda pemupukan hingga suhu kembali normal', kategori: 'lainnya' }
       ],
       alasan: 'Suhu permukaan tanah melebihi batas aman (>45C), dihasilkan dari aturan cadangan karena AI tidak tersedia.'
     };
@@ -52,9 +53,10 @@ function rekomendasiFallback(suhuPermukaan) {
     return {
       status: 'PERINGATAN - PANAS',
       rekomendasi: [
-        'Tingkatkan frekuensi penyiraman pada pagi atau sore hari',
-        'Tambahkan mulsa organik untuk menjaga kelembapan tanah',
-        'Kurangi paparan panas berlebih jika memungkinkan'
+        { langkah: 'Tingkatkan frekuensi penyiraman pada pagi atau sore hari', kategori: 'penyiraman' },
+        { langkah: 'Tambahkan mulsa organik untuk menjaga kelembapan tanah', kategori: 'mulsa' },
+        { langkah: 'Kurangi paparan panas berlebih jika memungkinkan', kategori: 'naungan' },
+        { langkah: 'Pantau suhu secara berkala untuk memastikan tidak memburuk', kategori: 'pemantauan' }
       ],
       alasan: 'Suhu permukaan tanah di atas rentang optimal, dihasilkan dari aturan cadangan karena AI tidak tersedia.'
     };
@@ -62,9 +64,10 @@ function rekomendasiFallback(suhuPermukaan) {
     return {
       status: 'OPTIMAL',
       rekomendasi: [
-        'Kondisi suhu tanah berada pada rentang optimal',
-        'Tidak diperlukan tindakan korektif saat ini',
-        'Lanjutkan pemantauan dan perawatan rutin'
+        { langkah: 'Kondisi suhu tanah berada pada rentang optimal', kategori: 'pemantauan' },
+        { langkah: 'Tidak diperlukan tindakan korektif saat ini', kategori: 'lainnya' },
+        { langkah: 'Lanjutkan pemantauan dan perawatan rutin', kategori: 'pemantauan' },
+        { langkah: 'Siram sesuai jadwal normal seperti biasa', kategori: 'penyiraman' }
       ],
       alasan: 'Suhu permukaan tanah berada pada rentang ideal, dihasilkan dari aturan cadangan karena AI tidak tersedia.'
     };
@@ -72,9 +75,10 @@ function rekomendasiFallback(suhuPermukaan) {
     return {
       status: 'PERHATIAN - SEJUK',
       rekomendasi: [
-        'Kurangi intensitas penyiraman untuk mencegah kelembapan berlebih',
-        'Gunakan mulsa untuk mempertahankan suhu tanah',
-        'Lakukan pemantauan suhu secara berkala'
+        { langkah: 'Kurangi intensitas penyiraman untuk mencegah kelembapan berlebih', kategori: 'penyiraman' },
+        { langkah: 'Gunakan mulsa untuk mempertahankan suhu tanah', kategori: 'mulsa' },
+        { langkah: 'Lakukan pemantauan suhu secara berkala', kategori: 'pemantauan' },
+        { langkah: 'Pertimbangkan pindahkan tanaman pot ke lokasi lebih hangat', kategori: 'lainnya' }
       ],
       alasan: 'Suhu permukaan tanah di bawah rentang optimal, dihasilkan dari aturan cadangan karena AI tidak tersedia.'
     };
@@ -82,9 +86,10 @@ function rekomendasiFallback(suhuPermukaan) {
   return {
     status: 'PERINGATAN - DINGIN',
     rekomendasi: [
-      'Gunakan penutup tanah atau mulsa untuk mengurangi kehilangan panas',
-      'Tunda kegiatan budidaya yang sensitif terhadap suhu rendah',
-      'Pantau suhu lebih sering pada kondisi ini'
+      { langkah: 'Gunakan penutup tanah atau mulsa untuk mengurangi kehilangan panas', kategori: 'mulsa' },
+      { langkah: 'Tunda kegiatan budidaya yang sensitif terhadap suhu rendah', kategori: 'lainnya' },
+      { langkah: 'Pantau suhu lebih sering pada kondisi ini', kategori: 'pemantauan' },
+      { langkah: 'Kurangi penyiraman karena penguapan sangat rendah', kategori: 'penyiraman' }
     ],
     alasan: 'Suhu permukaan tanah jauh di bawah rentang optimal, dihasilkan dari aturan cadangan karena AI tidak tersedia.'
   };
@@ -102,16 +107,30 @@ async function mintaRekomendasiAI(suhuRuang, suhuPermukaan, historiSingkat) {
         .join('\n')
     : '(belum ada data sebelumnya)';
 
-  const systemPrompt = `Kamu adalah asisten agronomi berpengalaman yang menganalisis data suhu tanah dari sensor inframerah (MLX90614) pada sebuah lahan pertanian/perkebunan kecil. Tugasmu memberi analisis dan rekomendasi treatment tanah yang mendalam, informatif, dan bisa langsung dikerjakan petani.
+  const systemPrompt = `Kamu adalah asisten yang menganalisis data suhu tanah/media tanam dari sensor inframerah (MLX90614), lalu memberi rekomendasi PENANGANAN TANAH terkait suhu tersebut. Target penggunamu BERAGAM: petani/pekebun di lahan pertanian, sampai masyarakat umum yang merawat tanaman di pot, halaman rumah, atau kebun kecil di rumah tangga.
+
+PENTING - BATASAN CAKUPAN: Fokus rekomendasi HARUS pada penanganan TANAH/MEDIA TANAM yang berkaitan langsung dengan suhu yang terukur (penyiraman untuk mengatur suhu, mulsa/penutup tanah, naungan dari matahari, pemantauan suhu). JANGAN memberi saran perawatan tanaman umum yang tidak berkaitan dengan suhu tanah (seperti jadwal pemupukan rutin, pemangkasan, pengendalian hama, penyerbukan, dll) -- itu di luar apa yang bisa disimpulkan dari data suhu ini. Kalau ragu apakah suatu saran relevan, pilih yang paling berkaitan langsung dengan suhu.
 
 Balas HANYA dengan JSON valid, tanpa markdown, tanpa teks lain, dengan format persis:
 {
   "status": "satu frasa singkat status kondisi tanah (contoh: OPTIMAL, PERHATIAN - PANAS, KRITIS - TERLALU PANAS)",
-  "rekomendasi": ["langkah 1 dengan penjelasan singkat kenapa langkah ini perlu", "langkah 2 dengan penjelasan singkat", "langkah 3 dengan penjelasan singkat", "langkah 4 dengan penjelasan singkat"],
-  "alasan": "analisis mendalam 4-6 kalimat yang menjelaskan: kondisi suhu saat ini dan artinya secara agronomis, bagaimana tren dari data historis (naik/turun/stabil dan seberapa cepat), dampak potensial terhadap tanaman/mikroba tanah/kelembapan jika kondisi ini berlanjut, dan konteks tambahan yang relevan (misal waktu hari, musim, atau karakteristik tanah yang perlu diperhatikan)"
+  "rekomendasi": [
+    {"langkah": "langkah 1 dengan penjelasan singkat kenapa langkah ini perlu", "kategori": "penyiraman"},
+    {"langkah": "langkah 2 dengan penjelasan singkat", "kategori": "mulsa"},
+    {"langkah": "langkah 3 dengan penjelasan singkat", "kategori": "naungan"},
+    {"langkah": "langkah 4 dengan penjelasan singkat", "kategori": "pemantauan"}
+  ],
+  "alasan": "analisis mendalam 4-6 kalimat yang menjelaskan: kondisi suhu tanah saat ini dan artinya, bagaimana tren dari data historis (naik/turun/stabil dan seberapa cepat), dampak potensial terhadap struktur tanah/mikroba tanah/kelembapan/akar jika kondisi ini berlanjut, dan konteks tambahan yang relevan"
 }
 
-Berikan MINIMAL 4 langkah rekomendasi (boleh lebih kalau relevan), masing-masing dengan penjelasan singkat kenapa langkah itu penting, bukan cuma instruksi satu baris. Bagian "alasan" harus berupa analisis yang benar-benar mendalam, bukan ringkasan satu-dua kalimat saja. Pertimbangkan suhu permukaan sebagai faktor utama, suhu ruang sebagai konteks pendukung, dan tren dari data historis jika ada (misalnya suhu naik cepat vs stabil, atau pola berulang).`;
+ATURAN UNTUK FIELD "kategori": WAJIB diisi salah satu dari daftar tetap berikut ini (case-sensitive, tanpa variasi lain): "penyiraman", "mulsa", "naungan", "pemantauan", "lainnya". Pilih kategori yang paling sesuai dengan isi langkahnya:
+- "penyiraman": kalau langkahnya soal menyiram/menambah air ke tanah
+- "mulsa": kalau langkahnya soal menutup permukaan tanah (jerami, sekam, daun kering, dll)
+- "naungan": kalau langkahnya soal memberi keteduhan/mengurangi paparan matahari langsung ke tanah
+- "pemantauan": kalau langkahnya soal memantau/mengecek suhu tanah secara berkala
+- "lainnya": kalau langkahnya soal penanganan tanah lain yang masih terkait suhu (drainase, dll) tapi tidak cocok kategori di atas
+
+Berikan MINIMAL 4 langkah rekomendasi, semuanya harus berupa TINDAKAN TERHADAP TANAH, bukan perawatan tanaman secara umum. Bagian "alasan" harus berupa analisis yang benar-benar mendalam, bukan ringkasan satu-dua kalimat saja. Gunakan bahasa yang mudah dipahami baik oleh petani berpengalaman maupun orang rumahan yang baru mulai merawat tanaman. Pertimbangkan suhu permukaan sebagai faktor utama, suhu ruang sebagai konteks pendukung, dan tren dari data historis jika ada.`;
 
   const userPrompt = `Data sensor saat ini:
 - Suhu permukaan tanah: ${suhuPermukaan}C
@@ -136,7 +155,7 @@ Berikan rekomendasi treatment tanah untuk kondisi ini.`;
       generationConfig: {
         responseMimeType: 'application/json',
         maxOutputTokens: 2048,
-        thinkingConfig: { thinkingLevel: 'medium' }
+        thinkingConfig: { thinkingLevel: 'low' }
       }
     })
   });
