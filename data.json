@@ -432,5 +432,83 @@
     ],
     "alasan": "Kondisi suhu permukaan tanah saat ini tercatat sangat dingin (-20°C) yang kontras dengan suhu udara di kisaran 29°C, sementara data historis menunjukkan fluktuasi ekstrem yang tidak wajar dari sangat panas (91°C) hingga sangat rendah dalam waktu singkat. Ketidakstabilan ekstrem ini sangat berbahaya bagi struktur tanah, dapat membunuh mikroorganisme baik di dalam tanah, serta memicu syok pada sistem perakaran tanaman yang berujung pada kerusakan jaringan akar. Fluktuasi yang drastis ini juga mengindikasikan kemungkinan adanya pembacaan sensor yang tidak stabil atau gangguan eksternal yang signifikan pada permukaan media tanam. Oleh karena itu, tindakan cepat seperti pemberian mulsa, naungan, dan penstabilan kelembapan sangat diperlukan untuk melindungi kondisi fisik tanah dari kerusakan lebih lanjut.",
     "sumber": "ai"
+  },
+  {
+    "waktu": "2026-07-30T12:05:25.121Z",
+    "suhuRuang": 29,
+    "suhuPermukaan": -20,
+    "status": "KRITIS - FLUKTUASI EKSTRIM",
+    "rekomendasi": [
+      {
+        "langkah": "Lakukan penyiraman dengan air bersuhu normal secara perlahan untuk membantu menstabilkan suhu permukaan media tanam yang sangat tidak stabil.",
+        "kategori": "penyiraman"
+      },
+      {
+        "langkah": "Pasang mulsa organik tebal seperti jerami atau sekam padi di atas permukaan tanah guna meredam perubahan suhu yang terlalu drastis.",
+        "kategori": "mulsa"
+      },
+      {
+        "langkah": "Berikan naungan sementara menggunakan jaring peneduh (net) untuk melindungi tanah dari paparan radiasi langsung yang memicu fluktuasi ekstrem.",
+        "kategori": "naungan"
+      },
+      {
+        "langkah": "Lakukan pemantauan sensor secara intensif karena pembacaan suhu tanah melonjak drastis lalu turun ke titik negatif secara tidak wajar, yang bisa mengindikasikan gangguan sensor atau anomali lingkungan.",
+        "kategori": "pemantauan"
+      }
+    ],
+    "alasan": "Data sensor menunjukkan kondisi suhu permukaan tanah yang sangat tidak normal, berfluktuasi secara ekstrem dari sangat panas hingga mencapai minus 20 derajat Celsius dalam waktu singkat, sementara suhu udara relatif stabil di sekitar 29 derajat Celsius. Tren historis menunjukkan lonjakan tajam hingga 91 derajat sebelum anjlok drastis, yang kemungkinan besar mengindikasikan gangguan pada pembacaan sensor inframerah atau kondisi lingkungan lokal yang sangat labil. Fluktuasi suhu yang ekstrem ini, jika benar terjadi pada tanah, akan merusak struktur agregat tanah, mematikan mikroorganisme baik, dan membuat akar tanaman mengalami syok termal yang parah. Oleh karena itu, diperlukan tindakan stabilisasi fisik pada media tanam sekaligus pengecekan ulang pada perangkat sensor untuk memastikan keakuratan data.",
+    "sumber": "ai"
+  },
+  {
+    "waktu": "2026-07-30T12:05:47.459Z",
+    "suhuRuang": 29,
+    "suhuPermukaan": 30,
+    "status": "PERHATIAN - FLUKTUATIF",
+    "rekomendasi": [
+      {
+        "langkah": "Lakukan penyiraman secukupnya dengan air bersuhu normal untuk membantu menstabilkan suhu permukaan media tanam yang sempat mengalami lonjakan ekstrem.",
+        "kategori": "penyiraman"
+      },
+      {
+        "langkah": "Tambahkan lapisan mulsa organik seperti jerami atau sekam padi setebal 3-5 cm di permukaan tanah guna meredam radiasi panas matahari langsung dan menjaga kelembapan.",
+        "kategori": "mulsa"
+      },
+      {
+        "langkah": "Pasang jaring peneduh atau naungan sementara di atas area tanam untuk melindungi tanah dari paparan terik matahari yang menyengat di siang hari.",
+        "kategori": "naungan"
+      },
+      {
+        "langkah": "Lakukan pemantauan suhu tanah secara berkala menggunakan termometer untuk memastikan pembacaan sensor kembali stabil dan tidak ada anomali ekstrem lanjutan.",
+        "kategori": "pemantauan"
+      }
+    ],
+    "alasan": "Suhu permukaan tanah saat ini berada di angka 30 derajat Celsius dengan suhu udara sekitar 29 derajat Celsius, menunjukkan kondisi yang relatif hangat namun masih dalam batas wajar. Data historis menunjukkan fluktuasi yang sangat ekstrem, mulai dari titik sangat rendah hingga mencapai 68 derajat Celsius sebelum kembali turun, yang mengindikasikan adanya potensi pembacaan tidak stabil atau gangguan pada sensor inframerah. Jika terjadi lonjakan panas yang nyata secara terus-menerus, hal ini dapat merusak struktur agregat tanah, membunuh mikroorganisme baik di dalam tanah, serta memicu penguapan air yang terlalu cepat sehingga akar tanaman rentan mengalami dehidrasi. Oleh karena itu, langkah perlindungan fisik seperti pemberian mulsa dan naungan sangat penting untuk meredam perubahan suhu yang drastis sekaligus menjaga kenyamanan ekosistem mikro di dalam media tanam.",
+    "sumber": "ai"
+  },
+  {
+    "waktu": "2026-07-30T12:06:16.708Z",
+    "suhuRuang": 39,
+    "suhuPermukaan": 40,
+    "status": "PERHATIAN - PANAS",
+    "rekomendasi": [
+      {
+        "langkah": "Lakukan penyiraman secukupnya pada media tanam di pagi hari atau sore hari untuk membantu menurunkan suhu tanah secara bertahap dan menjaga kelembapan akar.",
+        "kategori": "penyiraman"
+      },
+      {
+        "langkah": "Tambahkan lapisan mulsa organik seperti jerami atau sekam padi setebal 3-5 cm di permukaan tanah guna meredam paparan panas matahari langsung.",
+        "kategori": "mulsa"
+      },
+      {
+        "langkah": "Pasang jaring peneduh (paranet) di atas area tanam atau pot untuk mengurangi intensitas cahaya matahari yang membakar permukaan tanah.",
+        "kategori": "naungan"
+      },
+      {
+        "langkah": "Lakukan pengecekan suhu permukaan tanah secara berkala menggunakan sensor untuk memastikan tren suhu mulai stabil dan tidak mengalami lonjakan ekstrem.",
+        "kategori": "pemantauan"
+      }
+    ],
+    "alasan": "Suhu permukaan tanah saat ini tercatat di angka 40 derajat Celsius dengan suhu udara sekitar 39 derajat Celsius, yang menunjukkan kondisi lingkungan yang sangat panas dan berpotensi membuat media tanam cepat kering. Berdasarkan data historis, terjadi fluktuasi suhu permukaan yang sangat ekstrem dalam waktu singkat, mulai dari titik yang sangat rendah hingga melonjak drastis ke angka 68 derajat Celsius sebelum akhirnya mendingin ke kisaran saat ini. Lonjakan suhu yang ekstrem ini mengindikasikan adanya paparan radiasi panas yang tidak stabil atau pembacaan sensor yang sempat terganggu oleh pantulan cahaya langsung. Jika kondisi panas yang tinggi ini dibiarkan terus-menerus, struktur tanah dapat mengalami degradasi, populasi mikroba baik di dalam tanah akan terganggu, dan kelembapan air akan menguap dengan cepat sehingga akar tanaman berisiko mengalami stres kekeringan. Oleh karena itu, penanganan melalui pengelolaan suhu dan perlindungan permukaan tanah sangat krusial untuk mengembalikan kestabilan media tanam.",
+    "sumber": "ai"
   }
 ]
