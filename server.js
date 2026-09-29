@@ -22,8 +22,29 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ---------- Penyimpanan sederhana (file JSON) ----------
-function bacaHistori() {
+// ---------- Penyimpanan riwayat ----------
+// Di Vercel: pakai Upstash Redis (file tidak bisa disimpan permanen di sana).
+// Di laptop (tanpa env Redis): otomatis pakai file data.json seperti sebelumnya.
+const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
+const REDIS_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
+const REDIS_KEY = 'heat:histori';
+
+let redis = null;
+if (REDIS_URL && REDIS_TOKEN) {
+  const { Redis } = require('@upstash/redis');
+  redis = new Redis({ url: REDIS_URL, token: REDIS_TOKEN });
+}
+
+async function bacaHistori() {
+  if (redis) {
+    try {
+      const data = await redis.get(REDIS_KEY);
+      return Array.isArray(data) ? data : [];
+    } catch (err) {
+      console.error('Gagal baca Redis:', err.message);
+      return [];
+    }
+  }
   try {
     return JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
   } catch {
@@ -31,8 +52,12 @@ function bacaHistori() {
   }
 }
 
-function simpanHistori(histori) {
+async function simpanHistori(histori) {
   const dipotong = histori.slice(-MAX_HISTORY);
+  if (redis) {
+    await redis.set(REDIS_KEY, dipotong);
+    return;
+  }
   fs.writeFileSync(DATA_FILE, JSON.stringify(dipotong, null, 2));
 }
 
@@ -179,7 +204,7 @@ app.post('/api/data', async (req, res) => {
     return res.status(400).json({ error: 'suhuRuang dan suhuPermukaan wajib berupa angka' });
   }
 
-  const histori = bacaHistori();
+  const histori = await bacaHistori();
   const historiSingkat = histori.slice(-8).map(h => ({
     waktu: h.waktu,
     suhuRuang: h.suhuRuang,
@@ -207,14 +232,18 @@ app.post('/api/data', async (req, res) => {
   };
 
   histori.push(entry);
-  simpanHistori(histori);
+  try {
+    await simpanHistori(histori);
+  } catch (err) {
+    console.error('Gagal simpan histori:', err.message);
+  }
 
   res.json({ ok: true, entry });
 });
 
 // ---------- Endpoint: dashboard ambil data terbaru ----------
-app.get('/api/latest', (req, res) => {
-  const histori = bacaHistori();
+app.get('/api/latest', async (req, res) => {
+  const histori = await bacaHistori();
   if (histori.length === 0) {
     return res.status(404).json({ error: 'Belum ada data masuk' });
   }
@@ -222,14 +251,18 @@ app.get('/api/latest', (req, res) => {
 });
 
 // ---------- Endpoint: dashboard ambil histori untuk grafik ----------
-app.get('/api/history', (req, res) => {
+app.get('/api/history', async (req, res) => {
   const limit = parseInt(req.query.limit) || 50;
-  const histori = bacaHistori();
+  const histori = await bacaHistori();
   res.json(histori.slice(-limit));
 });
 
-app.listen(PORT, () => {
-  console.log(`Server jalan di port ${PORT}`);
-  console.log(`Model AI: ${AI_MODEL}`);
-  console.log(GEMINI_API_KEY ? 'GEMINI_API_KEY terdeteksi.' : 'PERINGATAN: GEMINI_API_KEY belum diset, akan pakai fallback rule-based terus.');
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server jalan di port ${PORT}`);
+    console.log(`Model AI: ${AI_MODEL}`);
+    console.log(GEMINI_API_KEY ? 'GEMINI_API_KEY terdeteksi.' : 'PERINGATAN: GEMINI_API_KEY belum diset, akan pakai fallback rule-based terus.');
+  });
+}
+
+module.exports = app;
