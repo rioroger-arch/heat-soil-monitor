@@ -1,6 +1,6 @@
 // ============================================================
 //  SOIL AI BACKEND
-//  Terima data suhu dari ESP32 -> minta rekomendasi ke Claude AI
+//  Terima data suhu dari ESP32 -> minta rekomendasi ke Gemini AI
 //  -> simpan histori -> sajikan ke web dashboard
 // ============================================================
 
@@ -23,27 +23,14 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ---------- Penyimpanan riwayat ----------
-// Di Vercel: pakai Upstash Redis (file tidak bisa disimpan permanen di sana).
-// Di laptop (tanpa env Redis): otomatis pakai file data.json seperti sebelumnya.
-const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
-const REDIS_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
-const REDIS_KEY = 'heat:histori';
-
-let redis = null;
-if (REDIS_URL && REDIS_TOKEN) {
-  const { Redis } = require('@upstash/redis');
-  redis = new Redis({ url: REDIS_URL, token: REDIS_TOKEN });
-}
+// Di Vercel: filesystem read-only, jadi histori disimpan di memori (RAM) selama fungsi masih "hangat".
+// Di laptop: tetap disimpan ke data.json supaya histori tidak hilang saat restart.
+const isVercel = !!process.env.VERCEL;
+let memoriHistori = [];
 
 async function bacaHistori() {
-  if (redis) {
-    try {
-      const data = await redis.get(REDIS_KEY);
-      return Array.isArray(data) ? data : [];
-    } catch (err) {
-      console.error('Gagal baca Redis:', err.message);
-      return [];
-    }
+  if (isVercel) {
+    return memoriHistori;
   }
   try {
     return JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
@@ -54,10 +41,8 @@ async function bacaHistori() {
 
 async function simpanHistori(histori) {
   const dipotong = histori.slice(-MAX_HISTORY);
-  if (redis) {
-    await redis.set(REDIS_KEY, dipotong);
-    return;
-  }
+  memoriHistori = dipotong;
+  if (isVercel) return;
   fs.writeFileSync(DATA_FILE, JSON.stringify(dipotong, null, 2));
 }
 
