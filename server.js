@@ -1,6 +1,6 @@
 // ============================================================
 //  SOIL AI BACKEND
-//  Terima data suhu dari ESP32 -> minta rekomendasi ke Gemini AI
+//  Terima data suhu dari ESP32 -> minta peringatan istirahat petani wanita ke Gemini AI
 //  -> simpan histori -> sajikan ke web dashboard
 // ============================================================
 
@@ -47,65 +47,51 @@ async function simpanHistori(histori) {
 }
 
 // ---------- Fallback rule-based (kalau AI gagal/timeout) ----------
-function rekomendasiFallback(suhuPermukaan) {
-  if (suhuPermukaan > 45) {
+// Peringatan sederhana: suhu terlalu tinggi -> istirahat, dan apa risikonya kalau dipaksakan.
+// Item pertama selalu kategori 'istirahat' (instruksi), sisanya 'kesehatan' (tampil sebagai label "Waspada").
+function rekomendasiFallback(suhuPermukaan, suhuRuang) {
+  const catatan = ' (Dihasilkan dari aturan cadangan karena AI tidak tersedia.)';
+  if (suhuPermukaan > 45 || suhuRuang > 35) {
     return {
-      status: 'KRITIS - TERLALU PANAS',
+      status: 'BAHAYA - HENTIKAN KERJA',
       rekomendasi: [
-        { langkah: 'Lakukan penyiraman segera untuk menurunkan suhu tanah', kategori: 'penyiraman' },
-        { langkah: 'Gunakan mulsa atau penutup tanah untuk mengurangi evaporasi', kategori: 'mulsa' },
-        { langkah: 'Pasang naungan sementara untuk mengurangi paparan matahari langsung', kategori: 'naungan' },
-        { langkah: 'Tunda pemupukan hingga suhu kembali normal', kategori: 'lainnya' }
+        { langkah: 'Suhu lahan sangat tinggi. Hentikan pekerjaan dan istirahat di tempat teduh sekarang.', kategori: 'istirahat' },
+        { langkah: 'Jika dipaksakan, tubuh bisa kehilangan banyak cairan dan mengalami dehidrasi.', kategori: 'kesehatan' },
+        { langkah: 'Jika dipaksakan, bisa muncul pusing, lemas, mual, bahkan pingsan.', kategori: 'kesehatan' },
+        { langkah: 'Jika terus dipaksakan, ada risiko sengatan panas yang berbahaya dan butuh pertolongan medis.', kategori: 'kesehatan' }
       ],
-      alasan: 'Suhu permukaan tanah melebihi batas aman (>45C), dihasilkan dari aturan cadangan karena AI tidak tersedia.'
+      alasan: 'Suhu permukaan lahan dan udara sudah jauh di atas batas aman untuk bekerja.' + catatan
     };
-  } else if (suhuPermukaan > 38) {
+  } else if (suhuPermukaan > 38 || suhuRuang > 32) {
     return {
-      status: 'PERINGATAN - PANAS',
+      status: 'PERINGATAN - ISTIRAHAT DULU',
       rekomendasi: [
-        { langkah: 'Tingkatkan frekuensi penyiraman pada pagi atau sore hari', kategori: 'penyiraman' },
-        { langkah: 'Tambahkan mulsa organik untuk menjaga kelembapan tanah', kategori: 'mulsa' },
-        { langkah: 'Kurangi paparan panas berlebih jika memungkinkan', kategori: 'naungan' },
-        { langkah: 'Pantau suhu secara berkala untuk memastikan tidak memburuk', kategori: 'pemantauan' }
+        { langkah: 'Suhu lahan terlalu tinggi. Sebaiknya berhenti dan istirahat dulu di tempat teduh.', kategori: 'istirahat' },
+        { langkah: 'Jika dipaksakan, tubuh cepat lelah dan mudah kehabisan cairan.', kategori: 'kesehatan' },
+        { langkah: 'Jika terus dipaksakan, bisa muncul pusing dan lemas hingga memburuk menjadi sengatan panas.', kategori: 'kesehatan' }
       ],
-      alasan: 'Suhu permukaan tanah di atas rentang optimal, dihasilkan dari aturan cadangan karena AI tidak tersedia.'
-    };
-  } else if (suhuPermukaan >= 25) {
-    return {
-      status: 'OPTIMAL',
-      rekomendasi: [
-        { langkah: 'Kondisi suhu tanah berada pada rentang optimal', kategori: 'pemantauan' },
-        { langkah: 'Tidak diperlukan tindakan korektif saat ini', kategori: 'lainnya' },
-        { langkah: 'Lanjutkan pemantauan dan perawatan rutin', kategori: 'pemantauan' },
-        { langkah: 'Siram sesuai jadwal normal seperti biasa', kategori: 'penyiraman' }
-      ],
-      alasan: 'Suhu permukaan tanah berada pada rentang ideal, dihasilkan dari aturan cadangan karena AI tidak tersedia.'
+      alasan: 'Suhu permukaan lahan sudah di atas batas nyaman untuk bekerja dalam waktu lama.' + catatan
     };
   } else if (suhuPermukaan >= 15) {
     return {
-      status: 'PERHATIAN - SEJUK',
+      status: 'AMAN',
       rekomendasi: [
-        { langkah: 'Kurangi intensitas penyiraman untuk mencegah kelembapan berlebih', kategori: 'penyiraman' },
-        { langkah: 'Gunakan mulsa untuk mempertahankan suhu tanah', kategori: 'mulsa' },
-        { langkah: 'Lakukan pemantauan suhu secara berkala', kategori: 'pemantauan' },
-        { langkah: 'Pertimbangkan pindahkan tanaman pot ke lokasi lebih hangat', kategori: 'lainnya' }
+        { langkah: 'Suhu lahan masih dalam batas aman untuk bekerja. Tidak perlu istirahat khusus saat ini.', kategori: 'lainnya' }
       ],
-      alasan: 'Suhu permukaan tanah di bawah rentang optimal, dihasilkan dari aturan cadangan karena AI tidak tersedia.'
+      alasan: 'Suhu permukaan lahan belum melewati batas yang mengharuskan istirahat.' + catatan
     };
   }
   return {
-    status: 'PERINGATAN - DINGIN',
+    status: 'PERINGATAN - TERLALU DINGIN',
     rekomendasi: [
-      { langkah: 'Gunakan penutup tanah atau mulsa untuk mengurangi kehilangan panas', kategori: 'mulsa' },
-      { langkah: 'Tunda kegiatan budidaya yang sensitif terhadap suhu rendah', kategori: 'lainnya' },
-      { langkah: 'Pantau suhu lebih sering pada kondisi ini', kategori: 'pemantauan' },
-      { langkah: 'Kurangi penyiraman karena penguapan sangat rendah', kategori: 'penyiraman' }
+      { langkah: 'Suhu lahan terlalu rendah. Sebaiknya berhenti sejenak dan menghangatkan diri.', kategori: 'istirahat' },
+      { langkah: 'Jika dipaksakan, tubuh cepat kedinginan dan jari tangan bisa kaku atau mati rasa.', kategori: 'kesehatan' }
     ],
-    alasan: 'Suhu permukaan tanah jauh di bawah rentang optimal, dihasilkan dari aturan cadangan karena AI tidak tersedia.'
+    alasan: 'Suhu permukaan lahan sangat rendah sehingga tidak nyaman dan berisiko untuk bekerja lama.' + catatan
   };
 }
 
-// ---------- Panggil Gemini API untuk rekomendasi treatment ----------
+// ---------- Panggil Gemini API untuk peringatan istirahat ----------
 async function mintaRekomendasiAI(suhuRuang, suhuPermukaan, historiSingkat) {
   if (!GEMINI_API_KEY) {
     throw new Error('GEMINI_API_KEY belum diset');
@@ -117,30 +103,29 @@ async function mintaRekomendasiAI(suhuRuang, suhuPermukaan, historiSingkat) {
         .join('\n')
     : '(belum ada data sebelumnya)';
 
-  const systemPrompt = `Kamu adalah asisten yang menganalisis data suhu tanah/media tanam dari sensor inframerah (MLX90614), lalu memberi rekomendasi PENANGANAN TANAH terkait suhu tersebut. Target penggunamu BERAGAM: petani/pekebun di lahan pertanian, sampai masyarakat umum yang merawat tanaman di pot, halaman rumah, atau kebun kecil di rumah tangga.
+  const systemPrompt = `Kamu adalah sistem peringatan untuk PETANI WANITA yang bekerja di lahan. Kamu menerima data suhu permukaan tanah dan suhu udara dari sensor, lalu memberi PERINGATAN SEDERHANA: apakah suhu sudah terlalu tinggi sehingga harus istirahat, dan apa akibat yang dikhawatirkan jika tetap memaksakan bekerja.
 
-PENTING - BATASAN CAKUPAN: Fokus rekomendasi HARUS pada penanganan TANAH/MEDIA TANAM yang berkaitan langsung dengan suhu yang terukur (penyiraman untuk mengatur suhu, mulsa/penutup tanah, naungan dari matahari, pemantauan suhu). JANGAN memberi saran perawatan tanaman umum yang tidak berkaitan dengan suhu tanah (seperti jadwal pemupukan rutin, pemangkasan, pengendalian hama, penyerbukan, dll) -- itu di luar apa yang bisa disimpulkan dari data suhu ini. Kalau ragu apakah suatu saran relevan, pilih yang paling berkaitan langsung dengan suhu.
+ATURAN ISI (PENTING):
+- JANGAN memberi tips kesehatan atau saran panjang (jangan bahas minum air, pakaian, topi, kompres, jadwal kerja, dan sejenisnya). Cukup dua hal: (1) perintah singkat untuk istirahat dan (2) risiko jika dipaksakan.
+- JANGAN memberi saran perawatan tanah atau tanaman.
+- Suhu tanah dipakai sebagai petunjuk panasnya lahan, bukan suhu tubuh.
+- Jika suhu masih aman (permukaan di bawah sekitar 38C dan udara di bawah sekitar 32C), status "AMAN" dan cukup 1 kalimat bahwa belum perlu istirahat khusus.
+- Jika suhu terlalu tinggi, sebut dengan jelas bahwa suhunya terlalu tinggi dan petani sebaiknya istirahat. Semakin tinggi suhunya, semakin tegas nadanya (di atas sekitar 45C permukaan atau 35C udara = hentikan kerja).
+- Risiko harus nyata dan masuk akal untuk paparan panas, misalnya dehidrasi, pusing, lemas, mual, pingsan, sengatan panas. Jangan menakut-nakuti berlebihan dan jangan mendiagnosis.
+- Gunakan bahasa Indonesia yang sederhana dan sopan.
 
 Balas HANYA dengan JSON valid, tanpa markdown, tanpa teks lain, dengan format persis:
 {
-  "status": "satu frasa singkat status kondisi tanah (contoh: OPTIMAL, PERHATIAN - PANAS, KRITIS - TERLALU PANAS)",
+  "status": "satu frasa singkat (contoh: AMAN, PERINGATAN - ISTIRAHAT DULU, BAHAYA - HENTIKAN KERJA)",
   "rekomendasi": [
-    {"langkah": "langkah 1 dengan penjelasan singkat kenapa langkah ini perlu", "kategori": "penyiraman"},
-    {"langkah": "langkah 2 dengan penjelasan singkat", "kategori": "mulsa"},
-    {"langkah": "langkah 3 dengan penjelasan singkat", "kategori": "naungan"},
-    {"langkah": "langkah 4 dengan penjelasan singkat", "kategori": "pemantauan"}
+    {"langkah": "satu kalimat perintah istirahat yang menyebut suhu terlalu tinggi", "kategori": "istirahat"},
+    {"langkah": "satu kalimat risiko jika dipaksakan", "kategori": "kesehatan"},
+    {"langkah": "satu kalimat risiko lanjutan jika terus dipaksakan", "kategori": "kesehatan"}
   ],
-  "alasan": "analisis mendalam 4-6 kalimat yang menjelaskan: kondisi suhu tanah saat ini dan artinya, bagaimana tren dari data historis (naik/turun/stabil dan seberapa cepat), dampak potensial terhadap struktur tanah/mikroba tanah/kelembapan/akar jika kondisi ini berlanjut, dan konteks tambahan yang relevan"
+  "alasan": "1-2 kalimat singkat: kenapa suhu saat ini dianggap tinggi/aman, dan jika ada tren dari data historis (naik/turun/stabil), sebutkan singkat."
 }
 
-ATURAN UNTUK FIELD "kategori": WAJIB diisi salah satu dari daftar tetap berikut ini (case-sensitive, tanpa variasi lain): "penyiraman", "mulsa", "naungan", "pemantauan", "lainnya". Pilih kategori yang paling sesuai dengan isi langkahnya:
-- "penyiraman": kalau langkahnya soal menyiram/menambah air ke tanah
-- "mulsa": kalau langkahnya soal menutup permukaan tanah (jerami, sekam, daun kering, dll)
-- "naungan": kalau langkahnya soal memberi keteduhan/mengurangi paparan matahari langsung ke tanah
-- "pemantauan": kalau langkahnya soal memantau/mengecek suhu tanah secara berkala
-- "lainnya": kalau langkahnya soal penanganan tanah lain yang masih terkait suhu (drainase, dll) tapi tidak cocok kategori di atas
-
-Berikan MINIMAL 4 langkah rekomendasi, semuanya harus berupa TINDAKAN TERHADAP TANAH, bukan perawatan tanaman secara umum. Bagian "alasan" harus berupa analisis yang benar-benar mendalam, bukan ringkasan satu-dua kalimat saja. Gunakan bahasa yang mudah dipahami baik oleh petani berpengalaman maupun orang rumahan yang baru mulai merawat tanaman. Pertimbangkan suhu permukaan sebagai faktor utama, suhu ruang sebagai konteks pendukung, dan tren dari data historis jika ada.`;
+ATURAN FIELD "kategori": hanya boleh "istirahat" (untuk perintah istirahat, hanya 1 item dan harus yang pertama), "kesehatan" (untuk setiap risiko jika dipaksakan), atau "lainnya" (hanya untuk status AMAN). Untuk kondisi tinggi, berikan 1 item "istirahat" dan 2-3 item "kesehatan".`;
 
   const userPrompt = `Data sensor saat ini:
 - Suhu permukaan tanah: ${suhuPermukaan}C
@@ -149,7 +134,7 @@ Berikan MINIMAL 4 langkah rekomendasi, semuanya harus berupa TINDAKAN TERHADAP T
 Data historis terakhir:
 ${konteksHistori}
 
-Berikan rekomendasi treatment tanah untuk kondisi ini.`;
+Berikan peringatan singkat untuk petani wanita pada kondisi ini.`;
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${AI_MODEL}:generateContent`;
 
@@ -202,7 +187,7 @@ app.post('/api/data', async (req, res) => {
     hasilAI = await mintaRekomendasiAI(suhuRuang, suhuPermukaan, historiSingkat);
   } catch (err) {
     console.error('Gagal memanggil AI, pakai fallback rule-based:', err.message);
-    hasilAI = rekomendasiFallback(suhuPermukaan);
+    hasilAI = rekomendasiFallback(suhuPermukaan, suhuRuang);
     sumber = 'fallback';
   }
 

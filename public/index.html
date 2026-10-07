@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Urban Heat Mitigation — AI Treatment</title>
+<title>Urban Heat Mitigation — Peringatan Istirahat Petani Wanita</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -229,7 +229,7 @@
     color:var(--mist-dim);
   }
 
-  /* Rekomendasi */
+  /* Peringatan & anjuran */
   .rec-panel{display:flex;flex-direction:column;}
   .rec-status{
     font-family:'Fraunces',serif;
@@ -247,40 +247,20 @@
   }
   .rec-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px;}
   .rec-list li{display:flex;gap:14px;align-items:flex-start;font-size:14.5px;line-height:1.55;}
-  .video-toggle-btn{
-    background:rgba(143,187,107,0.1);
-    border:1px solid rgba(143,187,107,0.3);
-    color:var(--leaf);
-    font-family:'Inter',sans-serif;
-    font-size:12.5px;
-    font-weight:500;
-    padding:6px 12px;
-    border-radius:6px;
-    cursor:pointer;
-    transition:filter .2s ease;
-  }
-  .video-toggle-btn:hover{filter:brightness(1.25);}
-  .video-embed{margin-top:10px;border-radius:8px;overflow:hidden;}
-  .video-embed iframe{display:block;border-radius:8px;}
-  .leaf-bullet{flex:none;margin-top:2px;}
-  .sumber-tag{
-    margin-top:20px;
-    align-self:flex-start;
+  .kat-chip{
+    display:inline-block;
+    margin-right:8px;
+    padding:2px 9px;
+    border-radius:999px;
+    border:1px solid currentColor;
     font-family:'IBM Plex Mono',monospace;
     font-size:10.5px;
-    letter-spacing:0.6px;
+    font-weight:600;
+    letter-spacing:0.5px;
     text-transform:uppercase;
-    color:var(--leaf-dim);
-    background:rgba(143,187,107,0.1);
-    border:1px solid rgba(143,187,107,0.25);
-    padding:5px 12px;
-    border-radius:999px;
+    vertical-align:1px;
   }
-  .sumber-tag.fallback{
-    color:var(--soil);
-    background:rgba(201,147,86,0.1);
-    border-color:rgba(201,147,86,0.3);
-  }
+  .leaf-bullet{flex:none;margin-top:2px;}
 
   .chart-panel{margin-top:20px;}
   .chart-panel .eyebrow{margin-bottom:8px;}
@@ -317,7 +297,7 @@
     </div>
     <div>
       <h1>Urban Heat Mitigation</h1>
-      <p>MLX90614 + ESP32 · AI TREATMENT RECOMMENDATION</p>
+      <p>MLX90614 + ESP32 · PERINGATAN ISTIRAHAT PETANI WANITA</p>
     </div>
   </div>
   <div class="live-pill"><span class="dot pending" id="dot"></span><span id="statusText">Menghubungkan...</span></div>
@@ -332,21 +312,17 @@
 <script>
 const REFRESH_MS = 3000;
 const ANGGAP_OFFLINE_SETELAH_MS = 5 * 60 * 1000; // kalau data terakhir lebih tua dari 5 menit, anggap sensor offline
-let waktuTerakhirDirender = null; // hindari render ulang DOM kalau data belum berubah (biar video tutorial nggak ke-reset)
+let waktuTerakhirDirender = null; // hindari render ulang DOM kalau data belum berubah
 
-// Perpustakaan video tutorial, dicocokkan berdasarkan kategori rekomendasi dari AI
-const VIDEO_TUTORIAL = {
-  penyiraman: { judul: 'Cara Menyiram Tanaman yang Baik dan Benar', id: 'gbA5dJ_CW68' },
-  mulsa: { judul: 'Cara Membuat Mulsa Organik di Musim Kemarau', id: '8lNu_WqAj-U' },
-  naungan: { judul: 'Cara Pasang Naungan Paranet untuk Tanaman', id: 'EY9KstFlevg' }
+// Label kategori anjuran dari AI (nilai kategori harus sama dengan di server.js)
+const LABEL_KATEGORI = {
+  istirahat: 'Istirahat',
+  minum: 'Minum',
+  naungan: 'Berteduh',
+  pakaian: 'Pakaian',
+  kesehatan: 'Waspada'
 };
 let sudahAdaData = false;
-
-function toggleVideo(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.style.display = el.style.display === 'none' ? 'block' : 'none';
-}
 
 function warnaStatus(suhu) {
   if (suhu > 45) return 'var(--crit)';
@@ -413,7 +389,7 @@ function render(entry, historiArr) {
     <div class="grid">
       <div class="col-left">
         <div class="panel gauge-card">
-          <p class="eyebrow">Suhu Permukaan Tanah</p>
+          <p class="eyebrow">Suhu Permukaan Tanah (Indikator Panas Lahan)</p>
           <div class="gauge-svg-wrap">
             ${buatGauge(entry.suhuPermukaan)}
             <div class="gauge-readout">
@@ -438,31 +414,22 @@ function render(entry, historiArr) {
       </div>
 
       <div class="panel rec-panel">
-        <p class="eyebrow">Rekomendasi Pengelolaan Tanah</p>
+        <p class="eyebrow">Peringatan &amp; Anjuran untuk Petani Wanita</p>
         <p class="rec-status" style="color:${warna};">${entry.status}</p>
         <p class="rec-alasan">${entry.alasan}</p>
         <ul class="rec-list">
           ${entry.rekomendasi.map((r, i) => {
             const teks = typeof r === 'string' ? r : r.langkah;
             const kategori = typeof r === 'string' ? null : r.kategori;
-            const video = kategori ? VIDEO_TUTORIAL[kategori] : null;
-            const videoElId = `video-${i}`;
+            const label = kategori ? LABEL_KATEGORI[kategori] : null;
             return `<li>
               ${leafBullet(warna)}
               <div style="flex:1;">
-                <span>${teks}</span>
-                ${video ? `
-                  <div style="margin-top:8px;">
-                    <button class="video-toggle-btn" style="color:${warna};border-color:${warna}55;background:${warna}1a;" onclick="toggleVideo('${videoElId}')">▶ Tonton tutorial: ${video.judul}</button>
-                    <div id="${videoElId}" class="video-embed" style="display:none;">
-                      <iframe width="100%" height="200" src="https://www.youtube.com/embed/${video.id}" title="${video.judul}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
-                    </div>
-                  </div>` : ''}
+                ${label ? `<span class="kat-chip" style="color:${warna};background:${warna}1a;">${label}</span>` : ''}<span>${teks}</span>
               </div>
             </li>`;
           }).join('')}
         </ul>
-        <span class="sumber-tag ${entry.sumber === 'ai' ? '' : 'fallback'}" ${entry.sumber === 'ai' ? `style="color:${warna};background:${warna}1a;border-color:${warna}55;"` : ''}>${entry.sumber === 'ai' ? '✦ Dianalisis oleh Gemini AI' : '⚠ Aturan cadangan — AI tidak tersedia'}</span>
       </div>
     </div>
 
